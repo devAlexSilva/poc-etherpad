@@ -20,12 +20,12 @@ export default function Home() {
         <div className={styles.grid}>
           <button className={styles.card}>
             <Link href="/register">
-              register
+              sign up
             </Link>
           </button>
           <button className={styles.card}>
             <Link href="/login">
-              loggin
+              log in
             </Link>
           </button>
         </div>
@@ -34,3 +34,6 @@ export default function Home() {
     </div>
   )
 }
+
+// sign up é um verbo
+// sign-up é substantivo ou adjetivo

@@ -9,18 +9,18 @@ export default function Register() {
 
     const { register, handleSubmit } = useForm({ shouldUseNativeValidation: true })
 
-    const registerUser = async ({ email, password, name }) => {
-        await Router.push('/')
+    const login = async ({ email, password }) => {
+        //await Router.push('/')
         console.clear()
-        console.log(email, '\n', password, '\n', name)
+        console.log(email, '\n', password)
     }
 
 
     return (
         <div className={styles.container}>
             <Head>
-                <title>poc-register</title>
-                <meta name="description" content="register user" />
+                <title>poc-login</title>
+                <meta name="description" content="log in on account" />
             </Head>
 
             <main>
@@ -28,23 +28,9 @@ export default function Register() {
                     home
                 </Link>
 
-                <form className={styles.form} onSubmit={handleSubmit(registerUser)}>
+                <form className={styles.form} onSubmit={handleSubmit(login)}>
 
                     <div className={styles.form_box}>
-
-                        <div className={styles.inputField}>
-                            <label htmlFor="name">
-                                Nome
-                            </label>
-                            <input
-                                {...register('name')}
-                                id="name"
-                                name="name"
-                                type="text"
-                                required
-                                placeholder="Jhon doe"
-                            />
-                        </div>
                         <div className={styles.inputField}>
                             <label htmlFor="email-address">
                                 Email
@@ -73,7 +59,7 @@ export default function Register() {
                         </div>
                     </div>
                     <button>
-                        Registrar
+                        Entrar
                     </button>
                 </form>
             </main>
