@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/app/server.js",
-    "dev": "nodemon src/app/server.js"
+    "dev": "nodemon --ignore front src/app/server.js"
   },
   "keywords": [],
   "author": "devAlexSilva",
