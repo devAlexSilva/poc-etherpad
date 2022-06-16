@@ -44,6 +44,7 @@ export class Login {
             if (!handleUser.passwordIsCorrect) return response.status(401);
 
             const token = jwt.sign({ accessToken: handleUser.id }, process.env.TOKEN, { expiresIn: '1h' })
+            response.status(200)
             return token;
     
         } catch {

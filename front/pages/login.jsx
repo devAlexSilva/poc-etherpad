@@ -4,6 +4,7 @@ import styles from '../styles/Form.module.css'
 import Router from 'next/router'
 import { useForm } from 'react-hook-form'
 import { BackApi } from './api/axios'
+import { setCookie } from 'nookies'
 
 
 export default function Register() {
@@ -12,14 +13,26 @@ export default function Register() {
     const api = new BackApi().backEndApi
 
     const login = async ({ email, password }) => {
-        const result = await api.post('/login', {
-            email,
-            password
-        }) 
+        try {
+            const result = await api.post('/login', {
+                email,
+                password
+            })
 
-        console.clear()
-        console.log(result)
-        await Router.push('/')
+            if (result.status == 200) {
+                const token = result.data
+                setCookie(null, 'user', token, {
+                    maxAge: 60 * 30 // 60s*30 = 30 minutes
+                })
+                await Router.push('/dashBoard')
+            }
+            else {
+                alert('tente novamente')
+            }
+        }
+        catch (err) {
+            alert('tente novamente')
+        }
     }
 
 

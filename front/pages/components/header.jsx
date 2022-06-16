@@ -1,6 +1,14 @@
 import Link from "next/link"
+import Router from "next/router"
+import { destroyCookie } from "nookies"
 
 export default function Header() {
+    
+    const logout = async () => {
+        destroyCookie(null, 'user')
+        await Router.push('/')
+    }
+    
     return (
         <>
             <div>
@@ -11,9 +19,9 @@ export default function Header() {
                         </Link>
                     </button>
                     <button>
-                        <Link href="/logout">
+                        <a title="logout" onClick={logout}>
                             log out
-                        </Link>
+                        </a>
                     </button>
                 </nav>
             </div>
