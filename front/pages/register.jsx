@@ -9,10 +9,9 @@ import { useForm } from 'react-hook-form'
 export default function Register() {
 
     const { register, handleSubmit } = useForm({ shouldUseNativeValidation: true })
+    const api = new BackApi().backEndApi
 
     const registerUser = async ({ email, password, name }) => {
-        const api = new BackApi().backEndApi
-
         const result = await api.post('/create', {
             email,
             password,
