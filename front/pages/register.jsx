@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import styles from '../styles/Form.module.css'
 import Router from 'next/router'
+import { BackApi } from './api/axios'
 import { useForm } from 'react-hook-form'
 
 
@@ -10,9 +11,18 @@ export default function Register() {
     const { register, handleSubmit } = useForm({ shouldUseNativeValidation: true })
 
     const registerUser = async ({ email, password, name }) => {
-        await Router.push('/')
+        const api = new BackApi().backEndApi
+
+        const result = await api.post('/create', {
+            email,
+            password,
+            name
+        })
+
         console.clear()
-        console.log(email, '\n', password, '\n', name)
+        console.log(result)
+        await Router.push('/')
+
     }
 
 
