@@ -6,6 +6,7 @@ export default function Header() {
     
     const logout = async () => {
         destroyCookie(null, 'user')
+        destroyCookie(null, 'sessionID')
         await Router.push('/')
     }
     
