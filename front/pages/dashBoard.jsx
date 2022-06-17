@@ -1,13 +1,32 @@
-import { BackApi } from "./api/axios"
-import { useForm } from "react-hook-form"
 import styles from "../styles/Form.module.css"
+import { BackApi, EtherApi } from "./api/axios"
+import { useForm } from "react-hook-form"
+import { setCookie } from "nookies"
 
+
+const secret = process.env.NEXT_PUBLIC_SECRET
 
 export default function DashBoard(props) {
     const { register, handleSubmit } = useForm({ shouldUseNativeValidation: true })
+    const api = new EtherApi().etherpadApi
 
     const createPad = async ({ createTitle }) => {
-        console.log(createTitle)
+        const { data: author } = await api.get(`/createAuthorIfNotExistsFor?apikey=${secret}&name=${props.name}&authorMapper=${props.id}`)
+        const { authorID } = author.data
+
+        const { data: group } = await api.get(`/createGroupIfNotExistsFor?apikey=${secret}&groupMapper=${props.id}`)
+        const { groupID } = group.data
+        
+        const { data: pad } = await api.get(`/createGroupPad?apikey=${secret}&groupID=${groupID}&padName=${createTitle}`)
+
+        const currentTimeInSeconds = Math.floor(Date.now()/1000)
+        const validSession = currentTimeInSeconds + 1800 // 30 minutes
+        const { data: session } = await api.get(`/createSession?apikey=${secret}&groupID=${groupID}&authorID=${authorID}&validUntil=${validSession}`)
+        const { sessionID } = session.data
+
+        setCookie(null, 'sessionID', sessionID, {
+            maxAge: 60 * 30 // 60s*30 = 30 minutes
+        })
     }
     const accessPad = async ({ title }) => {
         console.log(title)
