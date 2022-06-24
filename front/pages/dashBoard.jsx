@@ -1,7 +1,6 @@
 import styles from "../styles/Form.module.css"
 import { BackApi, EtherApi } from "./api/axios"
 import { useForm } from "react-hook-form"
-import { setCookie } from "nookies"
 import { useState } from "react"
 
 
@@ -14,7 +13,6 @@ export default function DashBoard(props) {
 
     const { register, handleSubmit } = useForm({ shouldUseNativeValidation: true })
     const api = new EtherApi().etherpadApi
-    const accessApi = new EtherApi().tokenApi
 
     const createPad = async ({ createTitle }) => {
         const { data: author } = await api.get(`/createAuthorIfNotExistsFor?apikey=${secret}&name=${props.name}&authorMapper=${props.id}`)
@@ -25,14 +23,19 @@ console.log(pad)
         
         setShowFrame(true)
     }
+
     const accessPad = async ({ title }) => {
+        setShowInfo(`http://localhost:9001/p/${title}`)
+        setShowFrame(true)
+    }
+
+    const listPads = async (e) => {
+        e.preventDefault()
         const { data: author } = await api.get(`/createAuthorIfNotExistsFor?apikey=${secret}&name=${props.name}&authorMapper=${props.id}`)
         const { authorID } = author.data
 
-        const { data: info } = await api.get(`/padUsers?apikey=${secret}&padID=${title}`)
-        console.log(info)
-        setShowInfo(`http://localhost:9001/p/${title}`)
-        setShowFrame(true)
+        const { data } = await api.get(`/getAuthorName?authorID=a.jdqHtZBS8xyf1qjo`)
+        console.log(data)
     }
 
 
@@ -95,6 +98,12 @@ console.log(pad)
                         </button>
                     </form>
                 </div>
+
+                <nav>
+                    <button onClick={listPads}>
+                        listar pads
+                    </button>
+                </nav>
             </main>
             {showFrame &&
                 <section>
@@ -108,8 +117,15 @@ console.log(pad)
 
 export async function getServerSideProps(ctx) {
     const token = ctx.req.cookies.user
+    
+    if(!token) return {
+        redirect: {
+            destination: '/'
+        }
+    }
+    
     const api = new BackApi(token).backEndApi
-
+    
     const { data } = await api.get('/user')
 
     return {
