@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Link from 'next/link'
 import styles from '../styles/Form.module.css'
 import Router from 'next/router'
 import { useForm } from 'react-hook-form'
@@ -22,7 +21,8 @@ export default function Register() {
             if (result.status == 200) {
                 const token = result.data
                 setCookie(null, 'user', token, {
-                    maxAge: 60 * 30 // 60s*30 = 30 minutes
+                    //maxAge: 60 * 30 // 60s*30 = 30 minutes
+                    maxAge: 60 * 120
                 })
                 await Router.push('/dashBoard')
             }
@@ -44,10 +44,6 @@ export default function Register() {
             </Head>
 
             <main>
-                <Link href="/">
-                    home
-                </Link>
-
                 <form className={styles.form} onSubmit={handleSubmit(login)}>
 
                     <div className={styles.form_box}>

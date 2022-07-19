@@ -11,6 +11,10 @@ export class EtherApi {
     baseURL: "http://localhost:9001"
   })
 
+  apache = axios.create({
+    baseURL: "http://localhost:80"
+  })
+
 }
 
 export class BackApi {

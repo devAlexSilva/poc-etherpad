@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Link from 'next/link'
 import styles from '../styles/Form.module.css'
 import Router from 'next/router'
 import { BackApi } from './api/axios'
@@ -33,11 +32,7 @@ export default function Register() {
             </Head>
 
             <main>
-                <Link href="/">
-                    home
-                </Link>
-
-                <form className={styles.form} onSubmit={handleSubmit(registerUser)}>
+              <form className={styles.form} onSubmit={handleSubmit(registerUser)}>
 
                     <div className={styles.form_box}>
 

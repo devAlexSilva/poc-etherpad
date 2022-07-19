@@ -13,19 +13,20 @@ export default function DashBoard(props) {
 
     const { register, handleSubmit } = useForm({ shouldUseNativeValidation: true })
     const api = new EtherApi().etherpadApi
+    const loginEtherpad = new EtherApi().apache
 
     const createPad = async ({ createTitle }) => {
         const { data: author } = await api.get(`/createAuthorIfNotExistsFor?apikey=${secret}&name=${props.name}&authorMapper=${props.id}`)
         const { authorID } = author.data
 
         const { data: pad } = await api.get(`/createPad?apikey=${secret}&padID=${createTitle}&text=welcome`)
-console.log(pad)
-        
-        setShowFrame(true)
+        console.log(pad)
+
     }
 
     const accessPad = async ({ title }) => {
-        setShowInfo(`http://localhost:9001/p/${title}`)
+        //setShowInfo(`http://localhost:9001/p/${title}`)
+        setShowInfo(`http://localhost:80/p/title`)
         setShowFrame(true)
     }
 
@@ -38,6 +39,11 @@ console.log(pad)
         console.log(data)
     }
 
+    const showFrameWithProxy = () => {
+        setShowInfo(`http://localhost:80/`)
+        setShowFrame(true)
+    }
+
 
     return (
         <div>
@@ -45,7 +51,7 @@ console.log(pad)
             <p>id: {props.id}</p>
 
             <main>
-                <div>
+  {/*              <div>
                     <h2>criar novo texto</h2>
                     <form className={styles.form} onSubmit={handleSubmit(createPad)}>
 
@@ -71,7 +77,7 @@ console.log(pad)
                         </button>
                     </form>
                 </div>
-
+*/}
                 <div>
                     <h2>Entrar em um texto existente</h2>
                     <form className={styles.form} onSubmit={handleSubmit(accessPad)}>
@@ -103,6 +109,9 @@ console.log(pad)
                     <button onClick={listPads}>
                         listar pads
                     </button>
+                    <button onClick={showFrameWithProxy}>
+                        reverse proxy
+                    </button>
                 </nav>
             </main>
             {showFrame &&
@@ -117,15 +126,15 @@ console.log(pad)
 
 export async function getServerSideProps(ctx) {
     const token = ctx.req.cookies.user
-    
-    if(!token) return {
+
+    if (!token) return {
         redirect: {
             destination: '/'
         }
     }
-    
+
     const api = new BackApi(token).backEndApi
-    
+
     const { data } = await api.get('/user')
 
     return {
