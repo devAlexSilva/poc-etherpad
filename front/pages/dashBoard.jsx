@@ -2,6 +2,7 @@ import styles from "../styles/Form.module.css"
 import { BackApi, EtherApi } from "./api/axios"
 import { useForm } from "react-hook-form"
 import { useState } from "react"
+import { setCookie } from "nookies"
 
 
 const secret = process.env.NEXT_PUBLIC_SECRET
@@ -15,28 +16,34 @@ export default function DashBoard(props) {
     const api = new EtherApi().etherpadApi
     const loginEtherpad = new EtherApi().apache
 
+    function validSession() {
+        let time = Math.floor(new Date().getTime() / 1000)
+        time += (60 * 120) // 60 seconds * 120 = 2 hours
+        return time
+    }
+
     const createPad = async ({ createTitle }) => {
         const { data: author } = await api.get(`/createAuthorIfNotExistsFor?apikey=${secret}&name=${props.name}&authorMapper=${props.id}`)
         const { authorID } = author.data
+        console.log('author id: ', authorID)
 
-        const { data: pad } = await api.get(`/createPad?apikey=${secret}&padID=${createTitle}&text=welcome`)
-        console.log(pad)
+        const { data: group } = await api.get(`/createGroupIfNotExistsFor?apikey=${secret}&groupMapper=${props.id}`)
+        const { groupID } = group.data
+        console.log('group id: ', groupID)
 
-    }
+        const { data: pad } = await api.get(`/createGroupPad?apikey=${secret}&groupID=${groupID}&padName=${createTitle}&text=bla bla`)
+        console.log(pad.data)
 
-    const accessPad = async ({ title }) => {
-        //setShowInfo(`http://localhost:9001/p/${title}`)
-        setShowInfo(`http://localhost:80/p/title`)
+        const { data: session } = await api.get(`/createSession?apikey=${secret}&groupID=${groupID}&authorID=${authorID}&validUntil=${validSession()}`)
+        const { sessionID } = session.data
+        console.log('a session id é: ', sessionID)
+
+        setCookie(null, 'sessionID', sessionID, {
+            maxAge: 60 * 120 // 2h
+        })
+
+        setShowInfo(`http://localhost:9001/p/${createTitle}`)
         setShowFrame(true)
-    }
-
-    const listPads = async (e) => {
-        e.preventDefault()
-        const { data: author } = await api.get(`/createAuthorIfNotExistsFor?apikey=${secret}&name=${props.name}&authorMapper=${props.id}`)
-        const { authorID } = author.data
-
-        const { data } = await api.get(`/getAuthorName?authorID=a.jdqHtZBS8xyf1qjo`)
-        console.log(data)
     }
 
     const showFrameWithProxy = () => {
@@ -47,79 +54,26 @@ export default function DashBoard(props) {
 
     return (
         <div>
-            <h1>nome: {props.name}</h1>
-            <p>id: {props.id}</p>
-
-            <main>
-  {/*              <div>
-                    <h2>criar novo texto</h2>
-                    <form className={styles.form} onSubmit={handleSubmit(createPad)}>
-
-                        <div className={styles.form_box}>
-
-                            <div className={styles.inputField}>
-                                <label htmlFor="createTitle">
-                                    titulo
-                                </label>
-                                <input
-                                    {...register('createTitle')}
-                                    id="createTitle"
-                                    name="createTitle"
-                                    type="text"
-                                    required
-                                    placeholder="aula 02 de Inglês"
-                                />
-                            </div>
-
-                        </div>
-                        <button>
-                            Registrar
-                        </button>
-                    </form>
-                </div>
-*/}
+            <div>
+                <h1>nome: {props.name}</h1>
+                <p>id: {props.id}</p>
+            </div>
+            <main className={styles.container}>
                 <div>
-                    <h2>Entrar em um texto existente</h2>
-                    <form className={styles.form} onSubmit={handleSubmit(accessPad)}>
-
-                        <div className={styles.form_box}>
-
-                            <div className={styles.inputField}>
-                                <label htmlFor="title">
-                                    titulo
-                                </label>
-                                <input
-                                    {...register('title')}
-                                    id="title"
-                                    name="title"
-                                    type="text"
-                                    required
-                                    placeholder="aula 02 de Inglês"
-                                />
-                            </div>
-
-                        </div>
-                        <button>
-                            Entrar
-                        </button>
-                    </form>
+                    <h2>Abrir o Etherpad</h2>
                 </div>
 
-                <nav>
-                    <button onClick={listPads}>
-                        listar pads
+                <nav className={styles.nav}>
+                    <button>
+                        <a href="http://localhost:9001" target="_blank">
+                            pad
+                        </a>
                     </button>
                     <button onClick={showFrameWithProxy}>
                         reverse proxy
                     </button>
                 </nav>
             </main>
-            {showFrame &&
-                <section>
-                    <iframe src={showInfo} width={600} height={400}></iframe>
-
-                </section>
-            }
         </div>
     )
 }

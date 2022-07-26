@@ -1,24 +1,13 @@
 .container {
     min-height: 80vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.form {
-    background-color: rgb(178, 218, 241);
-    width: 70vw;
-    height: 70vh;
-    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.inputField {
-    margin: 25px;
-    display: flex;
-    flex-direction: column;
+.nav > button{
+    margin: 10px;
 }
 
 .inputField > input {
