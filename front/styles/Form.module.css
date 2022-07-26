@@ -1,6 +1,16 @@
 .container {
     min-height: 80vh;
     display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.form {
+    background-color: rgb(178, 218, 241);
+    width: 70vw;
+    height: 70vh;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -8,6 +18,12 @@
 
 .nav > button{
     margin: 10px;
+}
+
+.inputField {
+    margin: 25px;
+    display: flex;
+    flex-direction: column;
 }
 
 .inputField > input {
