@@ -17,4 +17,11 @@ router.post('/', async(req, res) => {
     res.send(data)
 })
 
+router.get('/', async (req, res) => {
+    const id = req.baseUrl;
+
+    const data = await pad.getById(id)
+    res.send(data)
+})
+
 export { router as pad }

@@ -31,4 +31,18 @@ export class Pad {
     }
 
   }
+
+  async getById(id) {
+    try {
+      const data = await prisma.pad.findMany({
+        where: {
+          creatorUser: id
+        }
+      })
+
+      return data
+    } catch (err) {
+      return err
+    }
+  }
 }
