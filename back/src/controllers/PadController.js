@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-import { response as res } from "express";
 import { prisma } from "../prisma/client.js";
 
 export class Pad {
@@ -15,9 +14,9 @@ export class Pad {
       const pad = await prisma.pad.create({
         data: {
           name,
-          name_hash: nameHashed,
+          nameHash: nameHashed,
           key,
-          private: isPrivate,
+          isPrivate,
           user: {
             connect: {
               id

@@ -14,9 +14,9 @@ model User {
   password  String   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  creator_pad Pad[]
+  creatorPad Pad[]
 
-  subOfPad subOfPad[]
+  subOfPad SubOfPad[]
 
   @@map("users")
 }
@@ -24,22 +24,23 @@ model User {
 model Pad {
   id Int @id @default(autoincrement())
   name String
-  name_hash String @unique
-  private Boolean @default(false)
+  nameHash String @unique
+  isPrivate Boolean @default(false)
   key String
-  user User @relation(fields: [creator_user], references: [id], onDelete: Cascade)
-  creator_user Int
+  user User @relation(fields: [creatorUser], references: [id])
+  creatorUser Int
 
-  subOfPad subOfPad[]
+  subOfPad SubOfPad[]
 
   @@map("pads")
 }
 
-model subOfPad {
-  user_id Int
-  pad_id Int
-  users User @relation(fields: [user_id], references: [id])
-  pads Pad @relation(fields: [pad_id], references: [id])
+model SubOfPad {
+  userId Int
+  padId Int
+  users User @relation(fields: [userId], references: [id])
+  pads Pad @relation(fields: [padId], references: [id])
 
-  @@unique([user_id, pad_id], map: "subs_of_pad")
+  @@unique([userId, padId], map: "sub_of_pad")
+  @@map("subs_of_pad")
 }
