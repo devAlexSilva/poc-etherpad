@@ -7,20 +7,23 @@ router.use(middleware);
 const pad = new Pad();
 
 router.post("/", async (req, res) => {
-  const name = req.body.name;
-  const key = req.body.key || "";
-  const isPrivate = req.body.isPrivate || false;
-  const id = req.baseUrl;
-
-  const data = await pad.create(name, key, isPrivate, id);
-  res.send(data);
+  try {
+    const data = await pad.create(req);
+    res.status(201).send(data);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
 });
 
 router.get("/", async (req, res) => {
-  const id = req.baseUrl;
-
-  const data = await pad.getById(id);
-  res.send(data);
+  try {
+    const data = await pad.getById(req);
+    res.send(data);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
 });
 
 router.delete("/:id", async (req, res) => {
