@@ -7,9 +7,9 @@ export class Pad {
     return nameHashed;
   }
 
-  async create(name, key, isPrivate, id ) {
+  async create(name, key, isPrivate, id) {
     const nameHashed = await this.#nameHash(name);
-    
+
     try {
       const pad = await prisma.pad.create({
         data: {
@@ -19,9 +19,9 @@ export class Pad {
           isPrivate,
           user: {
             connect: {
-              id
-            }
-          }
+              id,
+            },
+          },
         },
       });
 
@@ -29,20 +29,45 @@ export class Pad {
     } catch (err) {
       return err;
     }
-
   }
 
   async getById(id) {
     try {
       const data = await prisma.pad.findMany({
         where: {
-          creatorUser: id
-        }
-      })
+          creatorUser: id,
+        },
+      });
 
-      return data
+      return data;
     } catch (err) {
-      return err
+      return err;
     }
+  }
+
+  async deleteById(req) {
+    const userId = req.baseUrl;
+    const padId = Number(req.params.id);
+
+    const match = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        creatorPad: {
+          where: {
+            id: padId,
+          },
+        },
+      },
+    });
+
+    if(!match.creatorPad[0]) throw new Error("pad id not found in this user")
+
+    await prisma.pad.delete({
+      where: {
+        id: padId
+      }
+    })
   }
 }
