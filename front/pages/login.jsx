@@ -56,6 +56,7 @@ export default function Register() {
                                 id="email-address"
                                 name="email"
                                 type="email"
+                                defaultValue="dev1@dev1"
                                 required
                                 placeholder="Email address"
                             />
@@ -69,6 +70,7 @@ export default function Register() {
                                 id="password"
                                 name="password"
                                 type="password"
+                                defaultValue={"dev1@dev1"}
                                 required
                                 placeholder="Password"
                             />

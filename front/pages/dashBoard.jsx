@@ -1,22 +1,14 @@
 import styles from "../styles/Form.module.css";
-import Router from "next/router";
 import { BackApi, EtherApi } from "./api/axios";
-import { useForm } from "react-hook-form";
-import { useRef, useState } from "react";
-import { setCookie } from "nookies";
+import { useCallback, useRef, useState } from "react";
 
 const secret = process.env.NEXT_PUBLIC_SECRET;
 
-export default function DashBoard(props) {
-  const [showFrame, setShowFrame] = useState(false);
-  const [showInfo, setShowInfo] = useState("");
+export default function DashBoard({ data, token }) {
   const textTitle = useRef();
-
-  const { register, handleSubmit } = useForm({
-    shouldUseNativeValidation: true,
-  });
+  const [padList, setPadList] = useState([]);
   const api = new EtherApi().etherpadApi;
-  const loginEtherpad = new EtherApi().apache;
+  const backApi = new BackApi(token).backEndApi;
 
   function validSession() {
     let time = Math.floor(new Date().getTime() / 1000);
@@ -24,52 +16,39 @@ export default function DashBoard(props) {
     return time;
   }
 
-  const createPad = async (e) => {
+  async function createPad(e) {
     const title = e.current.value;
 
-    const { data: author } = await api.get(
-      `/createAuthorIfNotExistsFor?apikey=${secret}&name=${props.name}&authorMapper=${props.id}`
-    );
-    const { authorID } = author.data;
-    console.log("author id: ", authorID);
-
-    const { data: group } = await api.get(
-      `/createGroupIfNotExistsFor?apikey=${secret}&groupMapper=${props.id}`
-    );
-    const { groupID } = group.data;
-    console.log("group id: ", groupID);
-
-    const { data: pad } = await api.get(
-      `/createGroupPad?apikey=${secret}&groupID=${groupID}&padName=${title}&text=bla bla`
-    );
-    console.log(pad.data);
-
-    const { data: session } = await api.get(
-      `/createSession?apikey=${secret}&groupID=${groupID}&authorID=${authorID}&validUntil=${validSession()}`
-    );
-    const { sessionID } = session.data;
-    console.log("a session id é: ", sessionID);
-
-    setCookie(null, "sessionID", sessionID, {
-      maxAge: 60 * 120, // 2h
+    const newPad = await backApi.post("/pad", {
+      name: title,
     });
-    /*
-        setShowInfo(`http://localhost:9001/p/${title}`)
-        setShowFrame(true)
-  */
-    await Router.push(`http://localhost:9001/p/${title}`);
-  };
+    console.log(newPad.data);
 
-  const showFrameWithProxy = () => {
-    setShowInfo(`http://localhost:80/`);
-    setShowFrame(true);
-  };
+    window.location = `http://localhost:9001/p/${title}`;
+  }
+
+  function subscribePad(e) {
+    const title = e.current.value;
+    window.location = `http://localhost:9001/p/${title}`;
+  }
+
+  async function listPads() {
+    const info = await backApi.get("/pad");
+    console.log(info.data);
+    setPadList(info.data);
+  }
+
+  async function deletePad(id) {
+    console.log(id);
+    await backApi.delete(`/pad/${id}`);
+    await listPads();
+  }
 
   return (
     <div>
       <div>
-        <h1>nome: {props.name}</h1>
-        <p>id: {props.id}</p>
+        <h1>nome: {data.name}</h1>
+        <p>id: {data.id}</p>
       </div>
       <main className={styles.container}>
         <div>
@@ -82,12 +61,29 @@ export default function DashBoard(props) {
               pad
             </a>
           </button>
-          <button onClick={showFrameWithProxy}>reverse proxy</button>
+          <button onClick={listPads}>Listar Pads</button>
         </nav>
 
         <input type="text" ref={textTitle} />
-        <button onClick={() => createPad(textTitle)}>ok</button>
+        <button onClick={() => createPad(textTitle)}>criar pad</button>
+        <button onClick={() => subscribePad(textTitle)}>acessar um pad</button>
       </main>
+      {padList?.[0]
+        ? padList.map((pad) => {
+            return (
+              <ul key={pad.id}>
+                <li>id do criador: {pad.creatorUser}</li>
+                <li>nome do pad: {pad.name}</li>
+                <li>hash do pad: {pad.nameHash}</li>
+                <li>id do pad: {pad.id}</li>
+                <button onClick={() => deletePad(pad.id)}> delete </button>
+                <a href={`http://localhost:9001/p/${pad.name}`} target="_blank">
+                  <button> abrir pad </button>
+                </a>
+              </ul>
+            );
+          })
+        : null}
     </div>
   );
 }
@@ -102,11 +98,11 @@ export async function getServerSideProps(ctx) {
       },
     };
 
-  const api = new BackApi(token).backEndApi;
+  const backApi = new BackApi(token).backEndApi;
 
-  const { data } = await api.get("/user");
+  const { data } = await backApi.get("/user");
 
   return {
-    props: data,
+    props: { data, token },
   };
 }
