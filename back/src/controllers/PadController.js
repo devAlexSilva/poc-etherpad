@@ -1,9 +1,8 @@
-import bcrypt from "bcrypt";
 import { prisma } from "../prisma/client.js";
 
 export class Pad {
-  async #nameHash(name) {
-    const nameHashed = await bcrypt.hash(name, 6);
+  #nameHash() {
+    const nameHashed = new Date().getTime().toLocaleString() 
     return nameHashed;
   }
 
@@ -13,7 +12,7 @@ export class Pad {
     const isPrivate = req.body.isPrivate || false;
     const id = req.baseUrl;
 
-    const nameHashed = await this.#nameHash(name);
+    const nameHashed = this.#nameHash();
     console.log(nameHashed);
 
     const pad = await prisma.pad.create({
