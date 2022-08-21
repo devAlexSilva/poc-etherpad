@@ -19,19 +19,18 @@ export default function DashBoard({ data, token }) {
   async function createPad(e) {
     const title = e.current.value;
 
-    const newPad = await backApi.post("/pad", {
+    const { data } = await backApi.post("/pad", {
       name: title,
     });
-    console.log(newPad.data);
 
-    window.location = `http://localhost:9001/p/${title}`;
+    window.location = `http://localhost:9001/p/${data.nameHash}`;
   }
-
-  function subscribePad(e) {
+  /*
+  function accessPad(e) {
     const title = e.current.value;
     window.location = `http://localhost:9001/p/${title}`;
   }
-
+*/
   async function listPads() {
     const info = await backApi.get("/pad");
     console.log(info.data);
@@ -66,24 +65,36 @@ export default function DashBoard({ data, token }) {
 
         <input type="text" ref={textTitle} />
         <button onClick={() => createPad(textTitle)}>criar pad</button>
-        <button onClick={() => subscribePad(textTitle)}>acessar um pad</button>
+        {/*} <button onClick={() => accessPad(textTitle)}>acessar um pad</button> */}
       </main>
-      {padList?.[0]
-        ? padList.map((pad) => {
-            return (
-              <ul key={pad.id}>
-                <li>id do criador: {pad.creatorUser}</li>
-                <li>nome do pad: {pad.name}</li>
-                <li>hash do pad: {pad.nameHash}</li>
-                <li>id do pad: {pad.id}</li>
-                <button onClick={() => deletePad(pad.id)}> delete </button>
-                <a href={`http://localhost:9001/p/${pad.name}`} target="_blank">
-                  <button> abrir pad </button>
-                </a>
-              </ul>
-            );
-          })
-        : null}
+      <aside className={styles.aside}>
+        <div>
+          <h2>criados pelo usuario:</h2>
+          {padList?.[0]
+            ? padList.map((pad) => {
+                return (
+                  <ul key={pad.id} className={styles.ul}>
+                    <li>id do criador: {pad.creatorUser}</li>
+                    <li>nome do pad: <strong>{pad.name}</strong></li>
+                    <li>hash do pad: {pad.nameHash}</li>
+                    <li>id do pad: {pad.id}</li>
+                    <a
+                      href={`http://localhost:9001/p/${pad.nameHash}`}
+                      target="_blank"
+                    >
+                      <button> abrir pad </button>
+                    </a>
+                    <button onClick={() => deletePad(pad.id)}> delete </button>
+                    <button>compartilhar</button>
+                  </ul>
+                );
+              })
+            : null}
+        </div>
+        <div>
+          <h2>compartilhados comigo: </h2>
+        </div>
+      </aside>
     </div>
   );
 }

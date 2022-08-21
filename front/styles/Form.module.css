@@ -32,3 +32,13 @@
     border: none;
     border-radius: 25px;
 }
+
+.aside {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 25px;
+}
+
+.ul > button {
+    margin: 10px 0 0 10px;
+}
