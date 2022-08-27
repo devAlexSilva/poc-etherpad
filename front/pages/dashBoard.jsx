@@ -50,9 +50,14 @@ export default function DashBoard({ data, token }) {
     setModalIsOpen(id);
   }
 
-  async function addUserInPad(email) {
-    const user = await backApi.post(`/user`, email);
-    console.log(user);
+  async function addUserInPad(email, padId) {
+    const { data } = await backApi.post(`/user`, {email});
+    if(!data) return alert("usuario não encontrado")
+
+    const userId = data.id
+    const subscribe = await backApi.post(`/pad/sub`, {userId, padId})
+
+    console.log(subscribe)
   }
   return (
     <div>
@@ -110,7 +115,7 @@ export default function DashBoard({ data, token }) {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="adicionar usuario pelo email"
                         />
-                        <button onClick={() => addUserInPad(email)}> + </button>
+                        <button onClick={() => addUserInPad(email, pad.id)}> + </button>
                       </div>
                     ) : null}
                   </ul>
@@ -148,7 +153,7 @@ export async function getServerSideProps(ctx) {
 /*
 *to do
 
-[] buscar usuario por email
+[x] buscar usuario por email
 
 [] retornar o usuario com a opção de adicionar ao pad
 
