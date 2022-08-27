@@ -61,7 +61,7 @@ export class User {
     async getByEmail(email) {
         try {
           const user = await prisma.user.findUnique({
-            where: { email },
+            where: { email: email },
             select: {
               id: true,
               name: true,
@@ -70,7 +70,7 @@ export class User {
           });
     
           return user;
-        } catch {
+        } catch (err){
           return response.status(400);
         }
       }
