@@ -1,88 +1,112 @@
-import { response } from "express";
-import bcrypt from "bcrypt";
-import { prisma } from "../prisma/client.js";
+import { response } from 'express'
+import bcrypt from 'bcrypt'
+import { prisma } from '../prisma/client.js'
+
 
 export class User {
-  name;
-  email;
-  password;
+    name
+    email
+    password
 
-  constructor(name, email, password) {
-    this.name = name;
-    this.email = email;
-    this.password = password;
-  }
-
-  async create() {
-    const userExists = await prisma.user.findFirst({
-      where: {
-        email: this.email,
-      },
-    });
-
-    if (userExists) throw new Error("user already existis");
-    if (this.password.length < 6) throw new Error("password too short");
-
-    const hashPassword = await bcrypt.hash(this.password, 8);
-
-    await prisma.user.create({
-      data: {
-        name: this.name,
-        email: this.email,
-        password: hashPassword,
-      },
-    });
-
-    return response.status(201);
-  }
-
-  async getByEmail(email) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { email },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      });
-
-      return user;
-    } catch {
-      return response.status(400);
+    constructor(name, email, password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
     }
-  }
 
-  async update(id, dataToUpdate) {
-    const { name } = dataToUpdate;
+    async create() {
+        const userExists = await prisma.user.findFirst({
+            where: {
+                email: this.email
+            }
+        })
 
-    try {
-      await prisma.user.update({
-        where: {
-          id: Number(id),
-        },
-        data: {
-          name: name,
-        },
-      });
+        if (userExists) throw new Error('user already existis');
+        if (this.password.length < 6) throw new Error('password too short');
 
-      return response.status(200);
-    } catch {
-      return response.status(400);
+        
+            const hashPassword = await bcrypt.hash(this.password, 8);
+
+            await prisma.user.create({
+                data: {
+                    name: this.name,
+                    email: this.email,
+                    password: hashPassword
+                }
+            })
+
+            return response.status(201); 
     }
-  }
 
-  async delete(id) {
-    try {
-      await prisma.user.delete({
-        where: {
-          id: id,
-        },
-      });
+    async read(userId) {
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id: Number(userId) },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            })
 
-      return response.status(200);
-    } catch {
-      return response.status(400);
+            return user;
+        }
+        catch {
+            return response.status(400);
+        }
     }
-  }
+
+    async getByEmail(email) {
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          });
+    
+          return user;
+        } catch {
+          return response.status(400);
+        }
+      }
+
+    async update(id, dataToUpdate) {
+        const { name } = dataToUpdate;
+
+        try {
+            await prisma.user.update({
+                where: {
+                    id: Number(id)
+                },
+                data: {
+                    name: name
+                }
+            });
+
+            return response.status(200);
+        
+        } catch {
+            return response.status(400);
+        }
+    }
+
+    async delete(id) {
+        try {
+            await prisma.user.delete({
+                where: {
+                    id: id
+                }
+            })
+            
+            return response.status(200);
+
+        } catch {
+            return response.status(400);
+        }
+    }
 }
