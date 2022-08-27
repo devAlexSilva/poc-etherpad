@@ -1,0 +1,51 @@
+.container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /*background-image: url("https://c.tenor.com/ZSRfK14Kek8AAAAd/lofi-vaporwave.gif");
+    */
+    background-image: url("https://media0.giphy.com/media/VbJeIn7jzpiTS9PczB/giphy.gif?cid=ecf05e47c7kafp1bwh5odscxzl90rpd5pmczxi9erwjawvjn&amp;rid=giphy.gif&amp;ct=g");
+    background-size: cover;
+    background-position: center;
+}
+
+.form {
+    width: 30vw;
+    height: 50vh;
+    background-color: rgba(189, 156, 241, 0.705);
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.nav > button{
+    margin: 10px;
+}
+
+.inputField {
+    margin: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.inputField > input {
+    padding: 5px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 25px;
+}
+
+.aside {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 25px;
+}
+
+.ul > button {
+    margin: 10px 0 0 10px;
+}
