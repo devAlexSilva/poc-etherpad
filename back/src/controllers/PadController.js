@@ -32,6 +32,20 @@ export class Pad {
     return pad;
   }
 
+  async sign(req) {
+    const userId = req.body.userId;
+    const padId = req.body.padId
+
+    const subInPad = await prisma.subOfPad.create({
+      data: {
+        padId: padId,
+        userId: userId
+      }
+    })
+
+    return subInPad;
+  }
+
   async getById(req) {
     const id = req.baseUrl;
 

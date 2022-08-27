@@ -16,6 +16,16 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post("/sub", async (req, res) => {
+  try {
+    const data = await pad.sign(req);
+    res.status(201).send(data);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
+});
+
 router.get("/", async (req, res) => {
   try {
     const data = await pad.getById(req);
