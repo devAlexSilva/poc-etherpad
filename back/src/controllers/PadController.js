@@ -58,6 +58,22 @@ export class Pad {
     return data;
   }
 
+  async getSubPadById(req) {
+    const id = req.baseUrl;
+
+    const data = await prisma.pad.findMany({
+      where: {
+        subOfPad: {
+          some: {
+            userId: id
+          }
+        }
+      },
+    });
+
+    return data;
+  }
+
   async deleteById(req) {
     const userId = req.baseUrl;
     const padId = Number(req.params.id);

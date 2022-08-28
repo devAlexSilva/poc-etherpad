@@ -36,6 +36,16 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/sub", async (req, res) => {
+  try {
+    const data = await pad.getSubPadById(req);
+    res.send(data);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
+});
+
 router.delete("/:id", async (req, res) => {
   try {
     const data = await pad.deleteById(req);
