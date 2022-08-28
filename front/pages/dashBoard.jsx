@@ -8,6 +8,7 @@ export default function DashBoard({ data, token }) {
   const textTitleRef = useRef();
   const [email, setEmail] = useState("");
   const [padList, setPadList] = useState([]);
+  const [sharedList, setSharedList] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(0);
   const api = new EtherApi().etherpadApi;
   const backApi = new BackApi(token).backEndApi;
@@ -39,6 +40,12 @@ export default function DashBoard({ data, token }) {
     setPadList(info.data);
   }
 
+  async function listShared() {
+    const info = await backApi.get("/pad/sub");
+    console.log(info.data);
+    setSharedList(info.data);
+  }
+
   async function deletePad(id) {
     console.log(id);
     await backApi.delete(`/pad/${id}`);
@@ -51,13 +58,13 @@ export default function DashBoard({ data, token }) {
   }
 
   async function addUserInPad(email, padId) {
-    const { data } = await backApi.post(`/user`, {email});
-    if(!data) return alert("usuario não encontrado")
+    const { data } = await backApi.post(`/user`, { email });
+    if (!data) return alert("usuario não encontrado");
 
-    const userId = data.id
-    const subscribe = await backApi.post(`/pad/sub`, {userId, padId})
+    const userId = data.id;
+    const subscribe = await backApi.post(`/pad/sub`, { userId, padId });
 
-    console.log(subscribe)
+    console.log(subscribe);
   }
   return (
     <div>
@@ -77,6 +84,7 @@ export default function DashBoard({ data, token }) {
             </a>
           </button>
           <button onClick={listPads}>Listar Pads</button>
+          <button onClick={listShared}>Listar Pads Compartilhados</button>
         </nav>
         <input type="text" ref={textTitleRef} />
         <button onClick={() => createPad(textTitleRef)}>criar pad</button>
@@ -115,7 +123,10 @@ export default function DashBoard({ data, token }) {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="adicionar usuario pelo email"
                         />
-                        <button onClick={() => addUserInPad(email, pad.id)}> + </button>
+                        <button onClick={() => addUserInPad(email, pad.id)}>
+                          {" "}
+                          +{" "}
+                        </button>
                       </div>
                     ) : null}
                   </ul>
@@ -125,6 +136,27 @@ export default function DashBoard({ data, token }) {
         </div>
         <div>
           <h2>compartilhados comigo: </h2>
+
+          {sharedList?.[0]
+            ? sharedList.map((pad) => {
+                return (
+                  <ul key={pad.id} className={styles.ul}>
+                    <li>id do criador: {pad.creatorUser}</li>
+                    <li>
+                      nome do pad: <strong>{pad.name}</strong>
+                    </li>
+                    <li>hash do pad: {pad.nameHash}</li>
+                    <li>id do pad: {pad.id}</li>
+                    <a
+                      href={`http://localhost:9001/p/${pad.nameHash}`}
+                      target="_blank"
+                    >
+                      <button> abrir pad </button>
+                    </a>
+                  </ul>
+                );
+              })
+            : null}
         </div>
       </aside>
     </div>
@@ -157,7 +189,7 @@ export async function getServerSideProps(ctx) {
 
 [] retornar o usuario com a opção de adicionar ao pad
 
-[] assinar ao subOfPad do pad com o id do usuario adicionado
+[x] assinar ao subOfPad do pad com o id do usuario adicionado
 
 [] exibir os pads compartilhados com base no subOfPad
 */
